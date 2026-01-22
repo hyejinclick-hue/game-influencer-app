@@ -12,7 +12,58 @@
   <script type="module">
     import React, { useState, useMemo } from 'https://esm.sh/react@18.2.0';
     import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
-    import { Search } from 'https://esm.sh/lucide-react@0.263.1';
+    import { Search, Lock } from 'https://esm.sh/lucide-react@0.263.1';
+
+    // 여기서 비밀번호를 변경하세요
+    const CORRECT_PASSWORD = 'game2025';
+
+    const PasswordProtection = ({ onAuthenticated }) => {
+      const [password, setPassword] = React.useState('');
+      const [error, setError] = React.useState(false);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (password === CORRECT_PASSWORD) {
+          onAuthenticated();
+          setError(false);
+        } else {
+          setError(true);
+          setPassword('');
+        }
+      };
+
+      return React.createElement('div', { className: 'min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-6' },
+        React.createElement('div', { className: 'bg-gray-800/40 backdrop-blur-sm border border-purple-500/20 rounded-xl p-8 max-w-md w-full' },
+          React.createElement('div', { className: 'text-center mb-8' },
+            React.createElement(Lock, { className: 'mx-auto mb-4 text-purple-400', size: 48 }),
+            React.createElement('h1', { className: 'text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2' },
+              '🎮 게임 인플루언서 앱'
+            ),
+            React.createElement('p', { className: 'text-gray-300' },
+              '접근하려면 비밀번호를 입력하세요'
+            )
+          ),
+          React.createElement('form', { onSubmit: handleSubmit },
+            React.createElement('div', { className: 'mb-4' },
+              React.createElement('input', {
+                type: 'password',
+                value: password,
+                onChange: (e) => setPassword(e.target.value),
+                placeholder: '비밀번호 입력',
+                className: 'w-full px-4 py-3 bg-gray-700/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all'
+              })
+            ),
+            error && React.createElement('p', { className: 'text-red-400 text-sm mb-4' },
+              '비밀번호가 올바르지 않습니다.'
+            ),
+            React.createElement('button', {
+              type: 'submit',
+              className: 'w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all'
+            }, '입장하기')
+          )
+        )
+      );
+    };
 
     const GameInfluencerApp = () => {
       const [searchTerm, setSearchTerm] = React.useState('');
@@ -139,9 +190,19 @@
       );
     };
 
+    const App = () => {
+      const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+
+      if (!isAuthenticated) {
+        return React.createElement(PasswordProtection, { onAuthenticated: () => setIsAuthenticated(true) });
+      }
+
+      return React.createElement(GameInfluencerApp);
+    };
+
     ReactDOM.createRoot(document.getElementById('root')).render(
       React.createElement(React.StrictMode, null,
-        React.createElement(GameInfluencerApp)
+        React.createElement(App)
       )
     );
   </script>
